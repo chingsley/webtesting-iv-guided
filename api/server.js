@@ -1,23 +1,20 @@
-const express = require('express');
+const express = require("express");
 
-const Hobbits = require('../hobbits/hobbitsModel.js');
+const hobbitsRouter = require("./routes/hobbitsRouter");
 
 const server = express();
 
 server.use(express.json());
 
-server.get('/', (req, res) => {
-  res.status(200).json({ api: 'up' });
+server.get("/api", (req, res) => {
+  res.status(200).json({ api: "up" });
 });
 
-server.get('/hobbits', (req, res) => {
-  Hobbits.getAll()
-    .then(hobbits => {
-      res.status(200).json(rows);
-    })
-    .catch(error => {
-      res.status(500).json(error);
-    });
+server.use("/api/hobbits/", hobbitsRouter);
+server.use("/*", (req, res) =>
+  res.status(404).json({ error: "endpoint not found" })
+);
+server.use((error, req, res, next) => {
+  return res.status(500).json({ error: error.message });
 });
-
 module.exports = server;

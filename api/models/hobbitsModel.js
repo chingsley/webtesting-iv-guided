@@ -1,4 +1,4 @@
-const db = require("../data/dbConfig.js");
+const db = require("../../data/dbConfig.js");
 
 module.exports = {
   insert,
@@ -8,13 +8,15 @@ module.exports = {
   findById
 };
 
+const { getInsertedIds } = require("./modelHelpers");
 function insert(hobbit) {
   return db("hobbits")
     .insert(hobbit, "id")
     .then(ids => {
-      if (ids.length > 1) {
+      if (Array.isArray(hobbit)) {
         // for bulk insert
-        return db("hobbits");
+        const insertedIds = getInsertedIds(ids[0], hobbit);
+        return db("hobbits").whereIn("id", insertedIds);
       } else {
         return db("hobbits")
           .where({ id: ids[0] })
@@ -44,3 +46,6 @@ function findById(id) {
     .where({ id })
     .first();
 }
+
+// const a = getInsertedIds(10, ["a", "b", "c", 6]);
+// console.log(a);

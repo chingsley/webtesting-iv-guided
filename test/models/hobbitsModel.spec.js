@@ -1,5 +1,11 @@
-const db = require("../data/dbConfig");
-const { insert, update, remove, getAll, findById } = require("./hobbitsModel");
+const db = require("../../data/dbConfig");
+const {
+  insert,
+  update,
+  remove,
+  getAll,
+  findById
+} = require("../../api/models/hobbitsModel");
 
 describe("hobbits model", () => {
   beforeEach(async () => {
@@ -23,6 +29,34 @@ describe("hobbits model", () => {
       const insertedHobbit = await insert(hobbit);
 
       expect(insertedHobbit.name).toBe(hobbit.name);
+    });
+
+    describe("bulk insert", () => {
+      it("returns an array with the same length as the inserted bulk", async () => {
+        const hobbits = [{ name: "Matt" }, { name: "jonathan" }];
+        const insertedHobbit = await insert(hobbits);
+
+        expect(insertedHobbit.length).toBe(hobbits.length);
+      });
+
+      it("returns the inserted hobbits and their ids", async () => {
+        const hobbits = [{ name: "Matt" }, { name: "Jonathan" }];
+        const insertedHobbits = await insert(hobbits);
+        expect(Object.keys(insertedHobbits[0]).sort()).toEqual(
+          ["name", "id"].sort()
+        );
+      });
+
+      it("returns the inserted hobbits", async () => {
+        const hobbits = [{ name: "Matt" }, { name: "Jonathan" }];
+        hobbitNames = hobbits.map(hobbit => hobbit.name);
+        const insertedHobbitNames = (await insert(hobbits)).map(
+          hobbit => hobbit.name
+        );
+        expect(Object.values(insertedHobbitNames).sort()).toEqual(
+          hobbitNames.sort()
+        );
+      });
     });
   });
 
@@ -52,11 +86,14 @@ describe("hobbits model", () => {
   });
 
   describe("getAll", () => {
+    beforeEach(async () => {
+      await db("hobbits").truncate();
+    });
     it("returns all the hobbits", async () => {
       const hobbits = [{ name: "Sansa" }, { name: "John" }, { name: "Arya" }];
       await insert(hobbits); // in knex, insert can also perform bulk insert
-      const insertedHobbits = await getAll();
-      expect(insertedHobbits).toHaveLength(3);
+      const allHobbits = await getAll();
+      expect(allHobbits).toHaveLength(3);
     });
 
     it("returns all the inserted hobbits", async () => {
