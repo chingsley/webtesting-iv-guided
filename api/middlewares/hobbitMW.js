@@ -13,8 +13,8 @@ const validateHobbitId = async (req, res, next) => {
         .json({ error: `no hobbit matches the id of ${id}` });
     }
   } catch (err) {
-    console.log(err);
-    return res.status(500).json({ error: err.message });
+    next(err.message);
+    // return res.status(500).json({ error: err.message });
   }
 };
 

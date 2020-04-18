@@ -6,19 +6,19 @@ const getAllHobbits = (req, res, next) => {
       res.status(200).json(hobbits);
     })
     .catch((error) => {
-      // next(error);
-      res.status(500).json({ error: error.message });
+      next(error.message);
+      // res.status(500).json({ error: error.message });
     });
 };
 
-const createHobbit = (req, res) => {
-  // const hobbit = req.body;
+const createHobbit = (req, res, next) => {
   Hobbits.insert(req.body)
     .then((result) => {
       res.status(201).json(result);
     })
     .catch((error) => {
-      res.status(500).json({ error: error.message });
+      next(error.message);
+      // res.status(500).json({ error: error.message });
     });
 };
 
@@ -42,7 +42,8 @@ const updateHobbit = (req, res) => {
       }
     })
     .catch((error) => {
-      return res.status(500).json({ error: error.message });
+      next(error.message);
+      // return res.status(500).json({ error: error.message });
     });
 };
 
